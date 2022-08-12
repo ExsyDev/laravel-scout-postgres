@@ -11,6 +11,7 @@ use Laravel\Scout\Engines\Engine;
 use ScoutEngines\Postgres\TsQuery\PhraseToTsQuery;
 use ScoutEngines\Postgres\TsQuery\PlainToTsQuery;
 use ScoutEngines\Postgres\TsQuery\ToTsQuery;
+use Illuminate\Support\LazyCollection;
 
 class PostgresEngine extends Engine
 {
@@ -75,7 +76,6 @@ class PostgresEngine extends Engine
      * Perform update of the given model.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @return bool
      */
     protected function performUpdate(Model $model)
     {
@@ -98,6 +98,24 @@ class PostgresEngine extends Engine
                 $model->getKeyName() => $model->getKey(),
             ])->all()
         );
+    }
+    
+    public function lazyMap(Builder $builder, $results, $model)
+    {
+        // not supported
+        return new LazyCollection(
+            $this->map($builder, $results, $model)
+        );
+    }
+
+    public function createIndex($name, array $options = [])
+    {
+        return null;
+    }
+
+    public function deleteIndex($name)
+    {
+        return null;
     }
 
     /**
@@ -389,7 +407,6 @@ class PostgresEngine extends Engine
      * Get rank function.
      *
      * @param \Illuminate\Database\Eloquent\Model $model
-     * @return int
      */
     protected function rankFunction(Model $model)
     {
